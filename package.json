@@ -1,0 +1,30 @@
+{
+  "name": "aeterna",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "docker compose up --build",
+    "dev:spa": "cd src/spa && npm run dev",
+    "dev:back": "cd src/backend && npm run dev",
+    "build:spa": "cd src/spa && npm run build",
+    "build:back": "cd src/backend && npm run build",
+    "migrate": "cd src/backend && npm run migrate",
+    "lint": "eslint 'src/**/*.{ts,tsx}'",
+    "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",
+    "format": "prettier --check 'src/**/*.{ts,tsx,json,css,md}'",
+    "format:fix": "prettier --write 'src/**/*.{ts,tsx,json,css,md}'",
+    "check": "npm run lint:fix && npm run format:fix",
+    "install:all": "cd src/spa && npm install && cd ../backend && npm install"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.18.0",
+    "eslint": "^9.18.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.18",
+    "globals": "^15.14.0",
+    "prettier": "^3.4.2",
+    "typescript-eslint": "^8.20.0"
+  }
+}

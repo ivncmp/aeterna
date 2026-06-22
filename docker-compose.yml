@@ -1,0 +1,58 @@
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./src/infrastructure/nginx/nginx.dev.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - spa
+      - backend
+
+  spa:
+    build:
+      context: ./src/spa
+      dockerfile: ../../src/infrastructure/docker/spa.dev.Dockerfile
+    volumes:
+      - ./src/spa:/app
+      - spa_modules:/app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    command: sh -c "npm install && exec npm run dev -- --host 0.0.0.0"
+
+  backend:
+    build:
+      context: ./src/backend
+      dockerfile: ../../src/infrastructure/docker/backend.dev.Dockerfile
+    volumes:
+      - ./src/backend:/app
+      - backend_modules:/app/node_modules
+      - ./src/database:/database
+    environment:
+      - DATABASE_URL=postgresql://aeterna:secret@db:5432/aeterna
+      - JWT_SECRET=dev-secret-change-me
+      - MIGRATIONS_PATH=/database/migrations
+      - NODE_ENV=development
+    command: sh -c "npm install && exec npm run dev"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=aeterna
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=aeterna
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aeterna"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:
+  spa_modules:
+  backend_modules:
