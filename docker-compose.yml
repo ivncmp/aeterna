@@ -1,8 +1,9 @@
 services:
   nginx:
     image: nginx:alpine
+    restart: unless-stopped
     ports:
-      - "80:80"
+      - "8081:80"
     volumes:
       - ./src/infrastructure/nginx/nginx.dev.conf:/etc/nginx/nginx.conf:ro
     depends_on:
@@ -13,6 +14,7 @@ services:
     build:
       context: ./src/spa
       dockerfile: ../../src/infrastructure/docker/spa.dev.Dockerfile
+    restart: unless-stopped
     volumes:
       - ./src/spa:/app
       - spa_modules:/app/node_modules
@@ -24,6 +26,7 @@ services:
     build:
       context: ./src/backend
       dockerfile: ../../src/infrastructure/docker/backend.dev.Dockerfile
+    restart: unless-stopped
     volumes:
       - ./src/backend:/app
       - backend_modules:/app/node_modules
@@ -40,12 +43,13 @@ services:
 
   db:
     image: postgres:16-alpine
+    restart: unless-stopped
     environment:
       - POSTGRES_USER=aeterna
       - POSTGRES_PASSWORD=secret
       - POSTGRES_DB=aeterna
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - ${HOME}/.aeterna/postgres:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U aeterna"]
       interval: 2s
@@ -53,6 +57,5 @@ services:
       retries: 10
 
 volumes:
-  pgdata:
   spa_modules:
   backend_modules:
