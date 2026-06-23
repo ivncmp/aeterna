@@ -26,12 +26,13 @@ export function SplashScreen({ onDone }: SplashScreenProps) {
       clearTimeout(showTimer);
       clearTimeout(doneTimer);
     };
-  }, [onDone]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Box
       sx={{
-        position: "fixed",
+        position: "absolute",
         inset: 0,
         zIndex: 9999,
         display: "flex",
