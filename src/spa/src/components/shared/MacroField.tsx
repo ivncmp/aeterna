@@ -1,18 +1,16 @@
 import Box from "@mui/material/Box";
-import EditOutlined from "@mui/icons-material/EditOutlined";
 import { useTheme } from "@mui/material/styles";
 
-export function MacroField({
-  label,
-  value,
-  unit,
-  accent,
-}: {
+interface MacroFieldProps {
   label: string;
-  value: number;
+  value: number | null;
   unit: string;
   accent?: boolean;
-}) {
+  editable?: boolean;
+  onChange?: (value: number) => void;
+}
+
+export function MacroField({ label, value, unit, accent, editable, onChange }: MacroFieldProps) {
   const { tokens } = useTheme();
 
   return (
@@ -27,7 +25,7 @@ export function MacroField({
         justifyContent: "space-between",
       }}
     >
-      <Box sx={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: "2px", flex: 1 }}>
         <Box
           component="span"
           sx={{
@@ -38,14 +36,40 @@ export function MacroField({
         >
           {label}
         </Box>
-        <Box component="span" sx={{ font: "700 19px Inter", color: accent ? "primary.main" : "text.primary" }}>
-          {value}{" "}
-          <Box component="span" sx={{ fontSize: 12, fontWeight: 600, color: "text.secondary" }}>
-            {unit}
+        {editable ? (
+          <Box sx={{ display: "flex", alignItems: "baseline", gap: "4px" }}>
+            <Box
+              component="input"
+              type="number"
+              value={value ?? ""}
+              onChange={(e) => onChange?.(Number(e.target.value))}
+              sx={{
+                font: "700 19px Inter",
+                color: accent ? "primary.main" : "text.primary",
+                bgcolor: "transparent",
+                border: "none",
+                outline: "none",
+                width: 60,
+                p: 0,
+                MozAppearance: "textfield",
+                "&::-webkit-outer-spin-button, &::-webkit-inner-spin-button": {
+                  WebkitAppearance: "none",
+                },
+              }}
+            />
+            <Box component="span" sx={{ fontSize: 12, fontWeight: 600, color: "text.secondary" }}>
+              {unit}
+            </Box>
           </Box>
-        </Box>
+        ) : (
+          <Box component="span" sx={{ font: "700 19px Inter", color: accent ? "primary.main" : "text.primary" }}>
+            {value ?? 0}{" "}
+            <Box component="span" sx={{ fontSize: 12, fontWeight: 600, color: "text.secondary" }}>
+              {unit}
+            </Box>
+          </Box>
+        )}
       </Box>
-      <EditOutlined sx={{ fontSize: 15, color: tokens.textTertiary }} />
     </Box>
   );
 }
