@@ -13,6 +13,7 @@ import { Today } from "./pages/Today";
 import { History } from "./pages/History";
 import { Profile } from "./pages/Profile";
 import { Login } from "./pages/Login";
+import { SplashScreen } from "./components/layout/SplashScreen";
 import type { SheetState } from "./types";
 
 function getInitialMode(): ThemeMode {
@@ -27,6 +28,7 @@ function getInitialMode(): ThemeMode {
 
 export function App() {
   const [token, setToken] = useState(() => localStorage.getItem("token"));
+  const [splashDone, setSplashDone] = useState(!token);
   const [sheetState, setSheetState] = useState<SheetState>({ sheet: null });
   const openSheet = useCallback((s: SheetState) => setSheetState(s), []);
   const closeSheet = useCallback(() => setSheetState({ sheet: null }), []);
@@ -64,14 +66,18 @@ export function App() {
 
   const handleLogin = useCallback((t: string) => {
     setToken(t);
+    setSplashDone(true);
     queryClient.invalidateQueries({ queryKey: ["user"] });
   }, []);
+
+  const handleSplashDone = useCallback(() => setSplashDone(true), []);
 
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeModeContext.Provider value={themeCtx}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
+          {!splashDone && token && <SplashScreen onDone={handleSplashDone} />}
           {!token ? (
             <Login onLogin={handleLogin} />
           ) : (

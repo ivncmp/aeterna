@@ -1,19 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { Fast, WeekDay, ProteinScore } from "@/types";
+import type { Fast, WeekDay, ProteinScore, FastingStats } from "@/types";
 import { getZone, getNextZone, formatElapsed } from "@/lib/zones";
-import {
-  mockActiveFast,
-  mockWeekDays,
-  mockProteinScore,
-  mockStats,
-} from "@/lib/mock";
-import type { FastingStats } from "@/types";
+import { mockProteinScore, mockStats } from "@/lib/mock";
+import { api } from "@/lib/api";
 
 export function useActiveFast() {
   const { data: fast, ...rest } = useQuery({
     queryKey: ["fasts", "active"],
-    queryFn: async () => mockActiveFast() as Fast | null,
+    queryFn: () => api.get<Fast | null>("/fasts/active"),
     refetchInterval: 60_000,
   });
 
@@ -69,9 +64,8 @@ export function useFastingTimer(fast: Fast | null | undefined) {
 export function useStartFast() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async () => {
-      return mockActiveFast();
-    },
+    mutationFn: (targetMinutes?: number) =>
+      api.post<Fast>("/fasts", { target_duration_minutes: targetMinutes }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["fasts"] }),
   });
 }
@@ -79,10 +73,8 @@ export function useStartFast() {
 export function useStopFast() {
   const qc = useQueryClient();
   return useMutation({
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    mutationFn: async (id: string) => {
-      return null;
-    },
+    mutationFn: (id: string) =>
+      api.put<Fast>(`/fasts/${id}`, { status: "COMPLETED" }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["fasts"] }),
   });
 }
@@ -90,7 +82,7 @@ export function useStopFast() {
 export function useWeekDays() {
   return useQuery({
     queryKey: ["fasts", "week"],
-    queryFn: async (): Promise<WeekDay[]> => mockWeekDays(),
+    queryFn: () => api.get<WeekDay[]>("/fasts/week"),
   });
 }
 
@@ -110,7 +102,7 @@ export function useFastingStats() {
 
 export function useToggleFast(
   isActive: boolean,
-  fastId: string | undefined
+  fastId: string | undefined,
 ) {
   const startFast = useStartFast();
   const stopFast = useStopFast();
