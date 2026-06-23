@@ -35,7 +35,8 @@ services:
       - DATABASE_URL=postgresql://aeterna:secret@db:5432/aeterna
       - JWT_SECRET=dev-secret-change-me
       - MIGRATIONS_PATH=/database/migrations
-      - CLAUDE_API_KEY=${CLAUDE_API_KEY:-}
+      - DPROXY_URL=${DPROXY_URL:-http://host.docker.internal:4800}
+      - DPROXY_API_KEY=${DPROXY_API_KEY:-}
       - NODE_ENV=development
     command: sh -c "npm install && exec npm run dev"
     depends_on:
