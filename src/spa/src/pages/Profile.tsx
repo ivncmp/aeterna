@@ -13,49 +13,50 @@ import { StatGrid } from "@/components/profile/StatGrid";
 import { MonthlyCalendar } from "@/components/profile/MonthlyCalendar";
 import { NutritionBar } from "@/components/metrics/NutritionBar";
 import { useThemeMode } from "@/hooks/useThemeMode";
-import { mockUser, mockStats } from "@/lib/mock";
+import { useUser } from "@/hooks/useUser";
+import { mockStats } from "@/lib/mock";
 import { initials } from "@/lib/utils";
-
-const user = mockUser();
-const stats = mockStats();
-
-const STAT_ITEMS = [
-  {
-    label: "Current Streak",
-    value: `${stats.current_streak} days`,
-    icon: "\u{1F525}",
-  },
-  {
-    label: "Best Streak",
-    value: `${stats.best_streak} days`,
-    icon: "\u{2B50}",
-  },
-  { label: "Total Fasts", value: `${stats.total_fasts}`, icon: "\u{2705}" },
-  {
-    label: "Avg Duration",
-    value: `${stats.avg_duration_hours}h`,
-    icon: "\u{23F1}\u{FE0F}",
-  },
-  {
-    label: "Total Time",
-    value: `${stats.total_hours.toLocaleString()}h`,
-    icon: "\u{1F552}",
-  },
-  {
-    label: "Completion",
-    value: `${stats.completion_rate}%`,
-    icon: "\u{1F4CA}",
-  },
-];
+import { logout } from "@/lib/api";
 
 export function Profile() {
   const theme = useTheme();
   const { mode, toggle } = useThemeMode();
+  const { data: user } = useUser();
+  const stats = mockStats();
+
+  const STAT_ITEMS = [
+    {
+      label: "Current Streak",
+      value: `${stats.current_streak} days`,
+      icon: "\u{1F525}",
+    },
+    {
+      label: "Best Streak",
+      value: `${stats.best_streak} days`,
+      icon: "\u{2B50}",
+    },
+    { label: "Total Fasts", value: `${stats.total_fasts}`, icon: "\u{2705}" },
+    {
+      label: "Avg Duration",
+      value: `${stats.avg_duration_hours}h`,
+      icon: "\u{23F1}\u{FE0F}",
+    },
+    {
+      label: "Total Time",
+      value: `${stats.total_hours.toLocaleString()}h`,
+      icon: "\u{1F552}",
+    },
+    {
+      label: "Completion",
+      value: `${stats.completion_rate}%`,
+      icon: "\u{1F4CA}",
+    },
+  ];
 
   const SETTINGS = [
     {
       label: "Fasting Goal",
-      detail: `${user.fasting_goal_hours}h`,
+      detail: `${user?.fasting_goal_hours ?? 16}h`,
       icon: <TimerOutlinedIcon sx={{ fontSize: 20 }} />,
     },
     {
@@ -75,8 +76,10 @@ export function Profile() {
       label: "Log out",
       icon: <LogoutIcon sx={{ fontSize: 20 }} />,
       danger: true,
+      action: logout,
     },
   ];
+
   return (
     <Box sx={{ px: "20px", pb: "24px" }}>
       {/* Profile Header */}
@@ -100,15 +103,15 @@ export function Profile() {
             mb: "12px",
           }}
         >
-          {initials(user.name)}
+          {user ? initials(user.name) : ""}
         </Avatar>
         <Typography sx={{ font: "700 20px Inter", color: "text.primary" }}>
-          {user.name}
+          {user?.name ?? ""}
         </Typography>
         <Typography
           sx={{ font: "400 14px Inter", color: "text.secondary", mt: "2px" }}
         >
-          {user.email}
+          {user?.email ?? ""}
         </Typography>
         <Typography
           component="button"
@@ -193,7 +196,7 @@ export function Profile() {
           <Box
             key={item.label}
             component="button"
-            onClick={() => {}}
+            onClick={item.action ?? (() => {})}
             sx={{
               display: "flex",
               alignItems: "center",

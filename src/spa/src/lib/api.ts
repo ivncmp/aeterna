@@ -11,6 +11,10 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     },
   });
   if (!res.ok) {
+    if (res.status === 401 && token) {
+      localStorage.removeItem("token");
+      window.location.reload();
+    }
     const body = await res.json().catch(() => ({}));
     throw new Error((body as { message?: string }).message || `${res.status} ${res.statusText}`);
   }
@@ -25,3 +29,8 @@ export const api = {
     request<T>(path, { method: "PUT", body: JSON.stringify(body) }),
   delete: <T>(path: string) => request<T>(path, { method: "DELETE" }),
 };
+
+export function logout() {
+  localStorage.removeItem("token");
+  window.location.reload();
+}

@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import type { User } from "@/types";
-import { mockUser } from "@/lib/mock";
+import { api } from "@/lib/api";
 
 export function useUser() {
   return useQuery({
     queryKey: ["user"],
-    queryFn: async (): Promise<User> => mockUser(),
+    queryFn: () => api.get<User>("/auth/me"),
     staleTime: Infinity,
   });
 }

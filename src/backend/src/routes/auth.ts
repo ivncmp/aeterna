@@ -35,6 +35,42 @@ authRouter.post("/auth/login", async (req, res) => {
   res.json({ token, user: userWithoutPassword });
 });
 
+authRouter.post("/auth/register", async (req, res) => {
+  const { email, password, name, age, weight_kg, height_cm, sex, activity_level, fasting_goal_hours } = req.body;
+
+  if (!email || !password || !name) {
+    res.status(400).json({ message: "Email, password, and name are required" });
+    return;
+  }
+  if (password.length < 6) {
+    res.status(400).json({ message: "Password must be at least 6 characters" });
+    return;
+  }
+
+  const hash = await bcrypt.hash(password, 10);
+
+  try {
+    const { rows } = await pool.query(
+      `INSERT INTO users (id, email, password_hash, name, age, weight_kg, height_cm, sex, activity_level, fasting_goal_hours)
+       VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, $8, $9)
+       RETURNING *`,
+      [email, hash, name, age ?? null, weight_kg ?? null, height_cm ?? null, sex ?? null, activity_level ?? "moderate", fasting_goal_hours ?? 16],
+    );
+
+    const user = rows[0];
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, { expiresIn: "30d" });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password_hash, ...userWithoutPassword } = user;
+    res.status(201).json({ token, user: userWithoutPassword });
+  } catch (err: unknown) {
+    if (typeof err === "object" && err !== null && "code" in err && (err as { code: string }).code === "23505") {
+      res.status(409).json({ message: "Email already registered" });
+      return;
+    }
+    throw err;
+  }
+});
+
 authRouter.get("/auth/me", requireAuth, async (req: AuthRequest, res) => {
   const { rows } = await pool.query(
     "SELECT id, email, name, age, weight_kg, height_cm, sex, activity_level, fasting_goal_hours, created_at FROM users WHERE id = $1",
