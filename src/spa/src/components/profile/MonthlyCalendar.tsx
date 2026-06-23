@@ -1,19 +1,21 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import { useTheme } from "@mui/material/styles";
+import { useQuery } from "@tanstack/react-query";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { mockCalendarDays } from "@/lib/mock";
+import { api } from "@/lib/api";
 import type { CalendarDay } from "@/types";
 
 const DAY_HEADERS = ["M", "T", "W", "T", "F", "S", "S"];
 
 export function MonthlyCalendar() {
   const theme = useTheme();
-  const [year, setYear] = useState(2026);
-  const [month, setMonth] = useState(5);
+  const now = new Date();
+  const [year, setYear] = useState(now.getFullYear());
+  const [month, setMonth] = useState(now.getMonth());
 
   const STATUS_COLORS: Record<CalendarDay["status"], string> = {
     completed: "#8ADE88",
@@ -21,7 +23,11 @@ export function MonthlyCalendar() {
     none: theme.tokens.track,
   };
 
-  const days = useMemo(() => mockCalendarDays(year, month), [year, month]);
+  const monthKey = `${year}-${String(month + 1).padStart(2, "0")}`;
+  const { data: days = [] } = useQuery({
+    queryKey: ["stats", "calendar", monthKey],
+    queryFn: () => api.get<CalendarDay[]>(`/stats/calendar?month=${monthKey}`),
+  });
 
   const firstDayOfWeek = (new Date(year, month, 1).getDay() + 6) % 7;
 
@@ -30,7 +36,7 @@ export function MonthlyCalendar() {
     year: "numeric",
   });
 
-  const today = "2026-06-17";
+  const today = new Date().toISOString().slice(0, 10);
 
   function prev() {
     if (month === 0) {

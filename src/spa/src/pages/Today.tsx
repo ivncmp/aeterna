@@ -79,8 +79,6 @@ export function Today() {
 
         <ProteinCard />
         <MetricsGrid />
-        <MetricsGrid />
-        <MetricsGrid />
       </Box>
     </Box>
   );

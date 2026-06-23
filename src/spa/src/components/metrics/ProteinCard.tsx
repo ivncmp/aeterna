@@ -2,14 +2,17 @@ import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 import { ProgressGauge } from "@/components/metrics/ProgressGauge";
 import { useProteinScore } from "@/hooks/useFasting";
+import { useSheet } from "@/hooks/useSheet";
 
 export function ProteinCard() {
   const { tokens } = useTheme();
+  const { openSheet } = useSheet();
   const { data: protein } = useProteinScore();
   if (!protein) return null;
 
   return (
     <Box
+      onClick={() => openSheet({ sheet: "log-meal", tab: "text" })}
       sx={{
         bgcolor: "background.paper",
         borderRadius: "16px",
@@ -18,6 +21,7 @@ export function ProteinCard() {
         alignItems: "center",
         gap: 2,
         boxShadow: tokens.cardShadow,
+        cursor: "pointer",
       }}
     >
       <ProgressGauge

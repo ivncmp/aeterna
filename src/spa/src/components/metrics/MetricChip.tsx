@@ -10,6 +10,7 @@ interface MetricChipProps {
   value: string;
   subtitle?: string;
   subtitleColor?: string;
+  onClick?: () => void;
 }
 
 export function MetricChip({
@@ -19,11 +20,13 @@ export function MetricChip({
   value,
   subtitle,
   subtitleColor,
+  onClick,
 }: MetricChipProps) {
   const { tokens } = useTheme();
 
   return (
     <Box
+      onClick={onClick}
       sx={{
         bgcolor: "background.paper",
         borderRadius: "14px",
@@ -33,6 +36,7 @@ export function MetricChip({
         gap: "10px",
         minWidth: 0,
         boxShadow: tokens.cardShadow,
+        cursor: onClick ? "pointer" : undefined,
       }}
     >
       <IconTile color={iconColor}>{icon}</IconTile>

@@ -1,5 +1,6 @@
 import { type ReactNode } from "react";
 import Box from "@mui/material/Box";
+import type { SxProps, Theme } from "@mui/material/styles";
 import KeyboardArrowUpOutlined from "@mui/icons-material/KeyboardArrowUpOutlined";
 import KeyboardArrowDownOutlined from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { useTheme } from "@mui/material/styles";
@@ -12,6 +13,7 @@ interface CollapsibleItemProps {
   expanded: boolean;
   onToggle: () => void;
   children?: ReactNode;
+  sx?: SxProps<Theme>;
 }
 
 export function CollapsibleItem({
@@ -21,6 +23,7 @@ export function CollapsibleItem({
   expanded,
   onToggle,
   children,
+  sx: sxOverride,
 }: CollapsibleItemProps) {
   const { tokens } = useTheme();
 
@@ -31,6 +34,7 @@ export function CollapsibleItem({
         borderRadius: "14px",
         boxShadow: tokens.cardShadow,
         overflow: "hidden",
+        ...sxOverride as Record<string, unknown>,
       }}
     >
       <Box

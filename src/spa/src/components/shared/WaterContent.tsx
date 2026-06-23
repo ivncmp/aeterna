@@ -1,14 +1,18 @@
-import { useState } from "react";
 import Box from "@mui/material/Box";
 import RemoveOutlined from "@mui/icons-material/RemoveOutlined";
 import AddOutlined from "@mui/icons-material/AddOutlined";
 import { useTheme } from "@mui/material/styles";
 
-export function WaterContent() {
+interface WaterContentProps {
+  waterMl: number;
+  onChange: (ml: number) => void;
+}
+
+export function WaterContent({ waterMl, onChange }: WaterContentProps) {
   const { tokens } = useTheme();
-  const [glasses, setGlasses] = useState(6);
-  const liters = (glasses * 0.25).toFixed(1);
-  const progress = Math.min((glasses / 8) * 100, 100);
+  const glasses = Math.round(waterMl / 250);
+  const liters = (waterMl / 1000).toFixed(1);
+  const progress = Math.min((waterMl / 2000) * 100, 100);
 
   return (
     <Box>
@@ -23,7 +27,7 @@ export function WaterContent() {
       >
         <Box
           component="button"
-          onClick={() => setGlasses(Math.max(0, glasses - 1))}
+          onClick={() => onChange(Math.max(0, waterMl - 250))}
           sx={{
             width: 46,
             height: 46,
@@ -52,7 +56,7 @@ export function WaterContent() {
         </Box>
         <Box
           component="button"
-          onClick={() => setGlasses(glasses + 1)}
+          onClick={() => onChange(waterMl + 250)}
           sx={{
             width: 46,
             height: 46,

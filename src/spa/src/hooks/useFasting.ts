@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Fast, WeekDay, ProteinScore, FastingStats } from "@/types";
 import { getZone, getNextZone, formatElapsed } from "@/lib/zones";
-import { mockProteinScore, mockStats } from "@/lib/mock";
 import { api } from "@/lib/api";
 
 export function useActiveFast() {
@@ -89,14 +88,14 @@ export function useWeekDays() {
 export function useProteinScore() {
   return useQuery({
     queryKey: ["nutrition", "protein-score"],
-    queryFn: async (): Promise<ProteinScore> => mockProteinScore(),
+    queryFn: () => api.get<ProteinScore>("/nutrition/protein-score"),
   });
 }
 
 export function useFastingStats() {
   return useQuery({
-    queryKey: ["stats"],
-    queryFn: async (): Promise<FastingStats> => mockStats(),
+    queryKey: ["stats", "fasting"],
+    queryFn: () => api.get<FastingStats>("/stats/fasting"),
   });
 }
 

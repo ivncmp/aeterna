@@ -6,6 +6,8 @@ import { authRouter } from "./routes/auth";
 import { fastsRouter } from "./routes/fasts";
 import { mealsRouter } from "./routes/meals";
 import { metricsRouter } from "./routes/metrics";
+import { nutritionRouter } from "./routes/nutrition";
+import { statsRouter } from "./routes/stats";
 import { runMigrations } from "./db/migrate";
 
 const app = express();
@@ -17,6 +19,8 @@ app.use("/api", authRouter);
 app.use("/api", fastsRouter);
 app.use("/api", mealsRouter);
 app.use("/api", metricsRouter);
+app.use("/api", nutritionRouter);
+app.use("/api", statsRouter);
 
 const PORT = 3001;
 

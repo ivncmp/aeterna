@@ -13,44 +13,30 @@ import { StatGrid } from "@/components/profile/StatGrid";
 import { MonthlyCalendar } from "@/components/profile/MonthlyCalendar";
 import { NutritionBar } from "@/components/metrics/NutritionBar";
 import { useThemeMode } from "@/hooks/useThemeMode";
+import { useQuery } from "@tanstack/react-query";
 import { useUser } from "@/hooks/useUser";
-import { mockStats } from "@/lib/mock";
+import { useFastingStats } from "@/hooks/useFasting";
 import { initials } from "@/lib/utils";
-import { logout } from "@/lib/api";
+import { api, logout } from "@/lib/api";
 
 export function Profile() {
   const theme = useTheme();
   const { mode, toggle } = useThemeMode();
   const { data: user } = useUser();
-  const stats = mockStats();
+  const { data: stats } = useFastingStats();
+  const { data: nutrition } = useQuery({
+    queryKey: ["stats", "nutrition"],
+    queryFn: () => api.get<{ avg_calories_7d: number; avg_protein_7d: number; target_calories: number; target_protein: number }>("/stats/nutrition"),
+  });
 
+  const s = stats ?? { current_streak: 0, best_streak: 0, total_fasts: 0, avg_duration_hours: 0, total_hours: 0, completion_rate: 0 };
   const STAT_ITEMS = [
-    {
-      label: "Current Streak",
-      value: `${stats.current_streak} days`,
-      icon: "\u{1F525}",
-    },
-    {
-      label: "Best Streak",
-      value: `${stats.best_streak} days`,
-      icon: "\u{2B50}",
-    },
-    { label: "Total Fasts", value: `${stats.total_fasts}`, icon: "\u{2705}" },
-    {
-      label: "Avg Duration",
-      value: `${stats.avg_duration_hours}h`,
-      icon: "\u{23F1}\u{FE0F}",
-    },
-    {
-      label: "Total Time",
-      value: `${stats.total_hours.toLocaleString()}h`,
-      icon: "\u{1F552}",
-    },
-    {
-      label: "Completion",
-      value: `${stats.completion_rate}%`,
-      icon: "\u{1F4CA}",
-    },
+    { label: "Current Streak", value: `${s.current_streak} days`, icon: "\u{1F525}" },
+    { label: "Best Streak", value: `${s.best_streak} days`, icon: "\u{2B50}" },
+    { label: "Total Fasts", value: `${s.total_fasts}`, icon: "\u{2705}" },
+    { label: "Avg Duration", value: `${s.avg_duration_hours}h`, icon: "\u{23F1}\u{FE0F}" },
+    { label: "Total Time", value: `${s.total_hours.toLocaleString()}h`, icon: "\u{1F552}" },
+    { label: "Completion", value: `${s.completion_rate}%`, icon: "\u{1F4CA}" },
   ];
 
   const SETTINGS = [
@@ -167,11 +153,16 @@ export function Profile() {
       >
         <NutritionBar
           label="Avg Calories"
-          value={1850}
-          target={2000}
+          value={nutrition?.avg_calories_7d ?? 0}
+          target={nutrition?.target_calories ?? 2000}
           unit="kcal"
         />
-        <NutritionBar label="Avg Protein" value={92} target={128} unit="g" />
+        <NutritionBar
+          label="Avg Protein"
+          value={nutrition?.avg_protein_7d ?? 0}
+          target={nutrition?.target_protein ?? 128}
+          unit="g"
+        />
       </Box>
 
       {/* Settings */}

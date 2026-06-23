@@ -33,7 +33,7 @@ export function PhoneFrame({ children }: { children: ReactNode }) {
       sx={{
         position: "fixed",
         inset: 0,
-        bgcolor: theme.palette.mode === "dark" ? "#050507" : "#E5E5EA",
+        bgcolor: "#E5E5EA",
       }}
     >
       <Box

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
@@ -22,13 +22,13 @@ import { ChartTooltip } from "@/components/charts/ChartTooltip";
 import { DeltaBadge } from "@/components/charts/DeltaBadge";
 import { formatDate, sleepBarColor, MOOD_EMOJIS } from "@/lib/chart-utils";
 import {
-  mockWeightSeries,
-  mockFastingSeries,
-  mockNutritionSeries,
-  mockSleepSeries,
-  mockWaterSeries,
-  mockMoodSeries,
-} from "@/lib/mock";
+  useWeightSeries,
+  useFastingSeries,
+  useNutritionSeries,
+  useSleepSeries,
+  useWaterSeries,
+  useMoodSeries,
+} from "@/hooks/useChartData";
 import { ZONE_CONFIG } from "@/lib/zones";
 import type { TimeRange, MetabolicZone } from "@/types";
 
@@ -54,15 +54,12 @@ export function History() {
 
   const GRID_STROKE = theme.palette.divider;
 
-  const weight = useMemo(() => mockWeightSeries(days), [days]);
-  const fasting = useMemo(() => mockFastingSeries(Math.min(days, 30)), [days]);
-  const nutrition = useMemo(
-    () => mockNutritionSeries(Math.min(days, 30)),
-    [days],
-  );
-  const sleep = useMemo(() => mockSleepSeries(Math.min(days, 30)), [days]);
-  const water = useMemo(() => mockWaterSeries(Math.min(days, 30)), [days]);
-  const mood = useMemo(() => mockMoodSeries(Math.min(days, 30)), [days]);
+  const { data: weight = [] } = useWeightSeries(days);
+  const { data: fasting = [] } = useFastingSeries(days);
+  const { data: nutrition = [] } = useNutritionSeries(days);
+  const { data: sleep = [] } = useSleepSeries(days);
+  const { data: water = [] } = useWaterSeries(days);
+  const { data: mood = [] } = useMoodSeries(days);
 
   const weightDelta =
     weight.length >= 2

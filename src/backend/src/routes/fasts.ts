@@ -159,7 +159,8 @@ router.get("/fasts", async (req: AuthRequest, res) => {
     where += ` AND start_time >= $${params.length}`;
   }
   if (to) {
-    params.push(to);
+    const toEnd = String(to).length === 10 ? `${to}T23:59:59.999Z` : to;
+    params.push(toEnd);
     where += ` AND start_time <= $${params.length}`;
   }
 
