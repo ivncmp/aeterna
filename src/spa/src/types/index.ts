@@ -142,4 +142,5 @@ export type SheetState =
   | { sheet: null }
   | { sheet: "fab-menu" }
   | { sheet: "log-meal"; tab?: "text" | "photo" | "manual" }
-  | { sheet: "log-metrics"; section?: string };
+  | { sheet: "log-metrics"; section?: string }
+  | { sheet: "edit-profile" };

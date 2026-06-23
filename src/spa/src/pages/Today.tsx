@@ -7,6 +7,7 @@ import { IdleChip } from "@/components/timer/IdleChip";
 import { ProteinCard } from "@/components/metrics/ProteinCard";
 import { useTheme } from "@mui/material/styles";
 import { MetricsGrid } from "@/components/metrics/MetricsGrid";
+import { TodayMeals } from "@/components/meals/TodayMeals";
 import {
   useActiveFast,
   useFastingTimer,
@@ -79,6 +80,7 @@ export function Today() {
 
         <ProteinCard />
         <MetricsGrid />
+        <TodayMeals />
       </Box>
     </Box>
   );

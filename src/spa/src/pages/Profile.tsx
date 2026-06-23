@@ -18,9 +18,11 @@ import { useUser } from "@/hooks/useUser";
 import { useFastingStats } from "@/hooks/useFasting";
 import { initials } from "@/lib/utils";
 import { api, logout } from "@/lib/api";
+import { useSheet } from "@/hooks/useSheet";
 
 export function Profile() {
   const theme = useTheme();
+  const { openSheet } = useSheet();
   const { mode, toggle } = useThemeMode();
   const { data: user } = useUser();
   const { data: stats } = useFastingStats();
@@ -44,6 +46,7 @@ export function Profile() {
       label: "Fasting Goal",
       detail: `${user?.fasting_goal_hours ?? 16}h`,
       icon: <TimerOutlinedIcon sx={{ fontSize: 20 }} />,
+      action: () => openSheet({ sheet: "edit-profile" }),
     },
     {
       label: "Notifications",
@@ -101,7 +104,7 @@ export function Profile() {
         </Typography>
         <Typography
           component="button"
-          onClick={() => {}}
+          onClick={() => openSheet({ sheet: "edit-profile" })}
           sx={{
             font: "600 14px Inter",
             color: "primary.main",
